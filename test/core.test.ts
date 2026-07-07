@@ -9,7 +9,7 @@ describe("script setup forwarded ref transform", () => {
   it("injects defineProps and replaces useForwardedRef with generated props access", () => {
     const result = transformVueSfc(`
 <script setup lang="ts">
-import { useForwardedRef } from "vue-forward-ref"
+import { useForwardedRef } from "vue-refs"
 
 const ref = useForwardedRef<HTMLInputElement>()
 </script>
@@ -23,7 +23,7 @@ const ref = useForwardedRef<HTMLInputElement>()
     )
     expect(result.code).toContain(`const ref = props.__forwarded_ref__`)
     expect(result.code).not.toContain("useForwardedRef<HTMLInputElement>()")
-    expect(result.code).not.toContain(`from "vue-forward-ref"`)
+    expect(result.code).not.toContain(`from "vue-refs"`)
   })
 
   it("does not transform useForwardedRef without an import", () => {
@@ -41,7 +41,7 @@ const ref = useForwardedRef<HTMLInputElement>()
   it("merges with an existing defineProps declaration", () => {
     const result = transformVueSfc(`
 <script setup lang="ts">
-import { useForwardedRef } from "vue-forward-ref"
+import { useForwardedRef } from "vue-refs"
 
 type Props = { label: string }
 const props = defineProps<Props>()
@@ -59,7 +59,7 @@ const inputRef = useForwardedRef()
   it("keeps the local variable name and generic type", () => {
     const result = transformVueSfc(`
 <script setup lang="ts">
-import { useForwardedRef } from "vue-forward-ref"
+import { useForwardedRef } from "vue-refs"
 
 const inputRef = useForwardedRef<HTMLDivElement>()
 </script>
@@ -72,7 +72,7 @@ const inputRef = useForwardedRef<HTMLDivElement>()
   it("recognizes import aliases", () => {
     const result = transformVueSfc(`
 <script setup lang="ts">
-import { useForwardedRef as forwarded } from "vue-forward-ref"
+import { useForwardedRef as forwarded } from "vue-refs"
 
 const inputRef = forwarded<HTMLInputElement>()
 </script>
@@ -86,7 +86,7 @@ const inputRef = forwarded<HTMLInputElement>()
   it("creates defineExpose from the factory API", () => {
     const result = transformVueSfc(`
 <script setup lang="ts">
-import { useForwardedRef } from "vue-forward-ref"
+import { useForwardedRef } from "vue-refs"
 
 function focus() {}
 function blur() {}
@@ -106,7 +106,7 @@ const ref = useForwardedRef(() => ({
   it("merges factory expose entries into an existing defineExpose object", () => {
     const result = transformVueSfc(`
 <script setup lang="ts">
-import { useForwardedRef } from "vue-forward-ref"
+import { useForwardedRef } from "vue-refs"
 
 defineExpose({
   open,
@@ -125,7 +125,7 @@ const ref = useForwardedRef(() => ({
   it("preserves spread entries when merging defineExpose", () => {
     const result = transformVueSfc(`
 <script setup lang="ts">
-import { useForwardedRef } from "vue-forward-ref"
+import { useForwardedRef } from "vue-refs"
 
 defineExpose({
   ...methods,
@@ -230,7 +230,7 @@ describe("analysis helpers", () => {
   it("detects imported useForwardedRef usage and vue imports", () => {
     const code = `
 <script setup lang="ts">
-import { useForwardedRef } from "vue-forward-ref"
+import { useForwardedRef } from "vue-refs"
 import MyInput from "./MyInput.vue"
 
 const ref = useForwardedRef<HTMLInputElement>()
@@ -249,7 +249,7 @@ const ref = useForwardedRef<HTMLInputElement>()
   it("keeps source maps disabled by default and available when requested", () => {
     const source = `
 <script setup lang="ts">
-import { useForwardedRef } from "vue-forward-ref"
+import { useForwardedRef } from "vue-refs"
 
 const ref = useForwardedRef<HTMLInputElement>()
 </script>

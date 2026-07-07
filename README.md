@@ -1,4 +1,4 @@
-# vue-forward-ref
+# vue-refs
 
 React-style Forwarded Ref for Vue.
 
@@ -10,7 +10,7 @@ Compiler Transform Only.
 
 ```ts
 import vue from "@vitejs/plugin-vue"
-import ForwardRef from "vue-forward-ref/vite"
+import ForwardRef from "vue-refs/vite"
 
 export default defineConfig({
   plugins: [vue(), ForwardRef()]
@@ -21,7 +21,7 @@ Child component:
 
 ```vue
 <script setup lang="ts">
-import { useForwardedRef } from "vue-forward-ref"
+import { useForwardedRef } from "vue-refs"
 
 const ref = useForwardedRef<HTMLInputElement>()
 </script>
@@ -50,7 +50,7 @@ Expose methods from the child ref:
 
 ```vue
 <script setup lang="ts">
-import { useForwardedRef } from "vue-forward-ref"
+import { useForwardedRef } from "vue-refs"
 
 function focus() {}
 function blur() {}

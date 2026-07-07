@@ -75,7 +75,7 @@ onMounted(() => {
     <section class="workbench" aria-labelledby="title">
       <header class="masthead">
         <div>
-          <p>vue-forward-ref</p>
+          <p>vue-refs</p>
           <h1 id="title">Forwarded Ref Playground</h1>
         </div>
         <output>{{ lastParentAction }}</output>

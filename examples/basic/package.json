@@ -8,6 +8,6 @@
     "@vitejs/plugin-vue": "catalog:",
     "vite": "catalog:",
     "vue": "catalog:",
-    "vue-forward-ref": "workspace:*"
+    "vue-refs": "workspace:*"
   }
 }

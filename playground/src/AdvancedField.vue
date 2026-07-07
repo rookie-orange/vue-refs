@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref } from "vue"
-import { useForwardedRef } from "vue-forward-ref"
+import { useForwardedRef } from "vue-refs"
 
 type ForwardedRefTarget<T> =
   | { value: T | null }

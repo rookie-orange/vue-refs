@@ -123,14 +123,14 @@ export const unplugin = createUnplugin<ForwardRefOptions | undefined>((options =
   }
 
   return {
-    name: "vue-forward-ref",
+    name: "vue-refs",
     enforce: "pre",
     vite: {
       configResolved(config) {
         const hasVuePlugin = config.plugins.some((plugin) => plugin.name === "vite:vue")
 
         if (!hasVuePlugin) {
-          config.logger.warn("vue-forward-ref should be used with @vitejs/plugin-vue.")
+          config.logger.warn("vue-refs should be used with @vitejs/plugin-vue.")
         }
       },
       configureServer(viteServer) {

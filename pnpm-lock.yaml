@@ -81,7 +81,7 @@ importers:
       vue:
         specifier: 'catalog:'
         version: 3.5.39(typescript@5.9.3)
-      vue-forward-ref:
+      vue-refs:
         specifier: workspace:*
         version: link:../..
 
@@ -96,7 +96,7 @@ importers:
       vue:
         specifier: 'catalog:'
         version: 3.5.39(typescript@5.9.3)
-      vue-forward-ref:
+      vue-refs:
         specifier: workspace:*
         version: link:..
     devDependencies:
