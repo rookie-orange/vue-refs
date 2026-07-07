@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.base.json",
+  "include": [
+    "packages/**/*.ts",
+    "test/**/*.ts",
+    "tsup.config.ts",
+    "global.d.ts"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "playground",
+    "examples"
+  ]
+}
