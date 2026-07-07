@@ -1,5 +1,5 @@
-import { parse as babelParse } from "@babel/parser"
-import type { File, ImportDeclaration, Node } from "@babel/types"
+import { parse as babelParse } from "@babel/parser";
+import type { File, ImportDeclaration, Node } from "@babel/types";
 
 export function parseScript(code: string): File {
   return babelParse(code, {
@@ -9,19 +9,19 @@ export function parseScript(code: string): File {
       "jsx",
       "decorators-legacy",
       "importAttributes",
-      "explicitResourceManagement"
-    ]
-  })
+      "explicitResourceManagement",
+    ],
+  });
 }
 
 export function getNodeSource(code: string, node: Pick<Node, "start" | "end">): string {
   if (node.start == null || node.end == null) {
-    return ""
+    return "";
   }
 
-  return code.slice(node.start, node.end)
+  return code.slice(node.start, node.end);
 }
 
 export function importDeclarationSource(node: ImportDeclaration): string {
-  return node.source.value
+  return node.source.value;
 }

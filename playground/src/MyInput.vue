@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useForwardedRef } from "vue-refs"
+import { useForwardedRef } from "vue-refs";
 
-const ref = useForwardedRef<HTMLInputElement>()
+const ref = useForwardedRef<HTMLInputElement>();
 </script>
 
 <template>

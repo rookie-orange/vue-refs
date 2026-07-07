@@ -1,73 +1,69 @@
 <script setup lang="ts">
-import { nextTick, onMounted, ref } from "vue"
-import AdvancedField from "./AdvancedField.vue"
-import MyInput from "./MyInput.vue"
+import { nextTick, onMounted, ref } from "vue";
+import AdvancedField from "./AdvancedField.vue";
+import MyInput from "./MyInput.vue";
 
 interface AdvancedFieldHandle {
-  focus(): void
-  blur(): void
-  select(): void
-  clear(): void
-  fill(value: string): void
-  getValue(): string
+  focus(): void;
+  blur(): void;
+  select(): void;
+  clear(): void;
+  fill(value: string): void;
+  getValue(): string;
 }
 
-const basicInput = ref<HTMLInputElement | null>(null)
-const advancedApi = ref<AdvancedFieldHandle | null>(null)
-const advancedInput = ref<HTMLInputElement | null>(null)
-const lastParentAction = ref("waiting for mount")
-const sampleIndex = ref(0)
+const basicInput = ref<HTMLInputElement | null>(null);
+const advancedApi = ref<AdvancedFieldHandle | null>(null);
+const advancedInput = ref<HTMLInputElement | null>(null);
+const lastParentAction = ref("waiting for mount");
+const sampleIndex = ref(0);
 
-const samples = [
-  "Forwarded ref is live",
-  "Factory expose merged",
-  "Vue runtime stays untouched"
-]
+const samples = ["Forwarded ref is live", "Factory expose merged", "Vue runtime stays untouched"];
 
 function setAdvancedInput(element: HTMLInputElement | null) {
-  advancedInput.value = element
+  advancedInput.value = element;
 }
 
 function focusBasicInput() {
-  basicInput.value?.focus()
-  lastParentAction.value = "basic DOM focus"
+  basicInput.value?.focus();
+  lastParentAction.value = "basic DOM focus";
 }
 
 function focusAdvanced() {
-  advancedApi.value?.focus()
-  lastParentAction.value = "factory focus"
+  advancedApi.value?.focus();
+  lastParentAction.value = "factory focus";
 }
 
 function selectAdvanced() {
-  advancedApi.value?.select()
-  lastParentAction.value = "factory select"
+  advancedApi.value?.select();
+  lastParentAction.value = "factory select";
 }
 
 function fillAdvanced() {
-  const nextValue = samples[sampleIndex.value % samples.length]
+  const nextValue = samples[sampleIndex.value % samples.length];
 
-  sampleIndex.value += 1
-  advancedApi.value?.fill(nextValue)
-  lastParentAction.value = `fill: ${nextValue}`
+  sampleIndex.value += 1;
+  advancedApi.value?.fill(nextValue);
+  lastParentAction.value = `fill: ${nextValue}`;
 }
 
 function clearAdvanced() {
-  advancedApi.value?.clear()
-  lastParentAction.value = "factory clear"
+  advancedApi.value?.clear();
+  lastParentAction.value = "factory clear";
 }
 
 function blurAdvanced() {
-  advancedApi.value?.blur()
-  lastParentAction.value = "factory blur"
+  advancedApi.value?.blur();
+  lastParentAction.value = "factory blur";
 }
 
 function readAdvancedValue() {
-  lastParentAction.value = `read: ${advancedApi.value?.getValue() || "empty"}`
+  lastParentAction.value = `read: ${advancedApi.value?.getValue() || "empty"}`;
 }
 
 onMounted(() => {
-  focusBasicInput()
-})
+  focusBasicInput();
+});
 </script>
 
 <template>
@@ -93,9 +89,7 @@ onMounted(() => {
             <MyInput ref="basicInput" />
           </label>
 
-          <button type="button" @click="focusBasicInput">
-            Focus DOM input
-          </button>
+          <button type="button" @click="focusBasicInput">Focus DOM input</button>
         </section>
 
         <section class="panel advanced-panel">
@@ -104,30 +98,15 @@ onMounted(() => {
             <h2>Factory handle</h2>
           </div>
 
-          <AdvancedField
-            ref="advancedApi"
-            :__forwarded_ref__="setAdvancedInput"
-          />
+          <AdvancedField ref="advancedApi" :__forwarded_ref__="setAdvancedInput" />
 
           <div class="actions" aria-label="Factory commands">
-            <button type="button" @click="focusAdvanced">
-              Focus
-            </button>
-            <button type="button" @click="selectAdvanced">
-              Select
-            </button>
-            <button type="button" @click="fillAdvanced">
-              Fill
-            </button>
-            <button type="button" @click="clearAdvanced">
-              Clear
-            </button>
-            <button type="button" @click="blurAdvanced">
-              Blur
-            </button>
-            <button type="button" @click="readAdvancedValue">
-              Read
-            </button>
+            <button type="button" @click="focusAdvanced">Focus</button>
+            <button type="button" @click="selectAdvanced">Select</button>
+            <button type="button" @click="fillAdvanced">Fill</button>
+            <button type="button" @click="clearAdvanced">Clear</button>
+            <button type="button" @click="blurAdvanced">Blur</button>
+            <button type="button" @click="readAdvancedValue">Read</button>
           </div>
 
           <dl class="inspector">
@@ -162,8 +141,7 @@ onMounted(() => {
   place-items: center;
   background:
     linear-gradient(90deg, rgb(23 33 29 / 5%) 1px, transparent 1px),
-    linear-gradient(180deg, rgb(23 33 29 / 5%) 1px, transparent 1px),
-    var(--paper);
+    linear-gradient(180deg, rgb(23 33 29 / 5%) 1px, transparent 1px), var(--paper);
   background-size: 34px 34px;
   color: var(--ink);
   font-family: "Avenir Next", "Segoe UI", ui-sans-serif, sans-serif;
@@ -187,8 +165,7 @@ onMounted(() => {
   border-bottom: 1px solid var(--line);
   background:
     linear-gradient(120deg, rgb(30 107 255 / 11%), transparent 34%),
-    linear-gradient(260deg, rgb(242 106 61 / 12%), transparent 36%),
-    #fbfdfc;
+    linear-gradient(260deg, rgb(242 106 61 / 12%), transparent 36%), #fbfdfc;
   padding: 24px;
 }
 

@@ -9,21 +9,21 @@ Zero Vue Runtime Patch.
 Compiler Transform Only.
 
 ```ts
-import vue from "@vitejs/plugin-vue"
-import ForwardRef from "vue-refs/vite"
+import vue from "@vitejs/plugin-vue";
+import ForwardRef from "vue-refs/vite";
 
 export default defineConfig({
-  plugins: [vue(), ForwardRef()]
-})
+  plugins: [vue(), ForwardRef()],
+});
 ```
 
 Child component:
 
 ```vue
 <script setup lang="ts">
-import { useForwardedRef } from "vue-refs"
+import { useForwardedRef } from "vue-refs";
 
-const ref = useForwardedRef<HTMLInputElement>()
+const ref = useForwardedRef<HTMLInputElement>();
 </script>
 
 <template>
@@ -35,10 +35,10 @@ Parent component:
 
 ```vue
 <script setup lang="ts">
-import { ref } from "vue"
-import MyInput from "./MyInput.vue"
+import { ref } from "vue";
+import MyInput from "./MyInput.vue";
 
-const input = ref<HTMLInputElement | null>(null)
+const input = ref<HTMLInputElement | null>(null);
 </script>
 
 <template>
@@ -50,15 +50,15 @@ Expose methods from the child ref:
 
 ```vue
 <script setup lang="ts">
-import { useForwardedRef } from "vue-refs"
+import { useForwardedRef } from "vue-refs";
 
 function focus() {}
 function blur() {}
 
 const ref = useForwardedRef<HTMLInputElement>(() => ({
   focus,
-  blur
-}))
+  blur,
+}));
 </script>
 ```
 

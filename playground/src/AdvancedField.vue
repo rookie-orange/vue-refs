@@ -1,47 +1,43 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from "vue"
-import { useForwardedRef } from "vue-refs"
+import { computed, onBeforeUnmount, ref } from "vue";
+import { useForwardedRef } from "vue-refs";
 
-type ForwardedRefTarget<T> =
-  | { value: T | null }
-  | ((value: T | null) => void)
-  | null
-  | undefined
+type ForwardedRefTarget<T> = { value: T | null } | ((value: T | null) => void) | null | undefined;
 
-const value = ref("Compile-time factory")
-const focused = ref(false)
-const lastAction = ref("mounted")
-const inputEl = ref<HTMLInputElement | null>(null)
+const value = ref("Compile-time factory");
+const focused = ref(false);
+const lastAction = ref("mounted");
+const inputEl = ref<HTMLInputElement | null>(null);
 
 function focus() {
-  inputEl.value?.focus()
-  lastAction.value = "focus()"
+  inputEl.value?.focus();
+  lastAction.value = "focus()";
 }
 
 function blur() {
-  inputEl.value?.blur()
-  lastAction.value = "blur()"
+  inputEl.value?.blur();
+  lastAction.value = "blur()";
 }
 
 function select() {
-  inputEl.value?.select()
-  lastAction.value = "select()"
+  inputEl.value?.select();
+  lastAction.value = "select()";
 }
 
 function clear() {
-  value.value = ""
-  focus()
-  lastAction.value = "clear()"
+  value.value = "";
+  focus();
+  lastAction.value = "clear()";
 }
 
 function fill(nextValue: string) {
-  value.value = nextValue
-  focus()
-  lastAction.value = "fill(value)"
+  value.value = nextValue;
+  focus();
+  lastAction.value = "fill(value)";
 }
 
 function getValue() {
-  return value.value
+  return value.value;
 }
 
 const forwardedInput = useForwardedRef<HTMLInputElement>(() => ({
@@ -50,39 +46,39 @@ const forwardedInput = useForwardedRef<HTMLInputElement>(() => ({
   select,
   clear,
   fill,
-  getValue
-}))
+  getValue,
+}));
 
-const forwardedInputTarget = forwardedInput as unknown as ForwardedRefTarget<HTMLInputElement>
+const forwardedInputTarget = forwardedInput as unknown as ForwardedRefTarget<HTMLInputElement>;
 
-const strength = computed(() => Math.min(100, Math.max(12, value.value.length * 7)))
+const strength = computed(() => Math.min(100, Math.max(12, value.value.length * 7)));
 
 function bindInput(element: Element | null) {
-  const nextInput = element instanceof HTMLInputElement ? element : null
+  const nextInput = element instanceof HTMLInputElement ? element : null;
 
-  inputEl.value = nextInput
-  assignForwardedRef(forwardedInputTarget, nextInput)
+  inputEl.value = nextInput;
+  assignForwardedRef(forwardedInputTarget, nextInput);
 }
 
 function assignForwardedRef<T>(target: ForwardedRefTarget<T>, nextValue: T | null) {
   if (typeof target === "function") {
-    target(nextValue)
-    return
+    target(nextValue);
+    return;
   }
 
   if (target) {
-    target.value = nextValue
+    target.value = nextValue;
   }
 }
 
 function setFocused(nextFocused: boolean) {
-  focused.value = nextFocused
-  lastAction.value = nextFocused ? "focus event" : "blur event"
+  focused.value = nextFocused;
+  lastAction.value = nextFocused ? "focus event" : "blur event";
 }
 
 onBeforeUnmount(() => {
-  assignForwardedRef(forwardedInputTarget, null)
-})
+  assignForwardedRef(forwardedInputTarget, null);
+});
 </script>
 
 <template>
@@ -126,9 +122,7 @@ onBeforeUnmount(() => {
   gap: 14px;
   border: 1px solid var(--line-strong, #cbd5d1);
   border-radius: 8px;
-  background:
-    linear-gradient(135deg, rgb(255 255 255 / 94%), rgb(245 248 246 / 92%)),
-    #ffffff;
+  background: linear-gradient(135deg, rgb(255 255 255 / 94%), rgb(245 248 246 / 92%)), #ffffff;
   box-shadow: 0 18px 42px rgb(17 24 22 / 10%);
   padding: 16px;
 }

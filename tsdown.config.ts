@@ -1,9 +1,9 @@
-import { defineConfig } from "tsdown"
+import { defineConfig } from "tsdown";
 
 export default defineConfig({
   entry: {
     vite: "packages/vite/src/index.ts",
-    runtime: "packages/runtime/src/index.ts"
+    runtime: "packages/runtime/src/index.ts",
   },
   clean: true,
   dts: true,
@@ -13,15 +13,15 @@ export default defineConfig({
   fixedExtension: false,
   hash: false,
   deps: {
-    neverBundle: ["vite", "vue"]
+    neverBundle: ["vite", "vue"],
   },
   outputOptions: {
-    exports: "named"
+    exports: "named",
   },
   outExtensions({ format }) {
     return {
       js: format === "cjs" ? ".cjs" : ".js",
-      dts: format === "cjs" ? ".d.cts" : ".d.ts"
-    }
-  }
-})
+      dts: format === "cjs" ? ".d.cts" : ".d.ts",
+    };
+  },
+});

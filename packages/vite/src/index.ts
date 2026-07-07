@@ -1,59 +1,59 @@
-import fs from "node:fs/promises"
-import path from "node:path"
-import { createUnplugin } from "unplugin"
-import type { ModuleNode, ViteDevServer } from "vite"
+import fs from "node:fs/promises";
+import path from "node:path";
+import { createUnplugin } from "unplugin";
+import type { ModuleNode, ViteDevServer } from "vite";
 import {
   analyzeVueSfc,
   getVueComponentImports,
   transformVueSfc,
-  type ComponentImport
-} from "../../core/src"
+  type ComponentImport,
+} from "../../core/src";
 
 export interface ForwardRefOptions {
-  include?: FilterPattern
-  exclude?: FilterPattern
-  sourcemap?: boolean
+  include?: FilterPattern;
+  exclude?: FilterPattern;
+  sourcemap?: boolean;
 }
 
-const VUE_RE = /\.vue$/
-type FilterPattern = RegExp | string | Array<RegExp | string>
+const VUE_RE = /\.vue$/;
+type FilterPattern = RegExp | string | Array<RegExp | string>;
 
 interface CachedAnalysis {
-  mtimeMs: number
-  hasUseForwardedRef: boolean
+  mtimeMs: number;
+  hasUseForwardedRef: boolean;
 }
 
 export const unplugin = createUnplugin<ForwardRefOptions | undefined>((options = {}) => {
-  const filter = createIdFilter(options.include ?? /\.vue$/, options.exclude)
-  const analysisCache = new Map<string, CachedAnalysis>()
-  const importerByChild = new Map<string, Set<string>>()
-  let server: ViteDevServer | null = null
+  const filter = createIdFilter(options.include ?? /\.vue$/, options.exclude);
+  const analysisCache = new Map<string, CachedAnalysis>();
+  const importerByChild = new Map<string, Set<string>>();
+  let server: ViteDevServer | null = null;
 
   async function analyzeFile(filename: string, fallbackCode?: string): Promise<boolean> {
-    const normalized = normalizePath(filename)
+    const normalized = normalizePath(filename);
 
     try {
-      const stat = await fs.stat(normalized)
-      const cached = analysisCache.get(normalized)
+      const stat = await fs.stat(normalized);
+      const cached = analysisCache.get(normalized);
 
       if (cached && cached.mtimeMs === stat.mtimeMs) {
-        return cached.hasUseForwardedRef
+        return cached.hasUseForwardedRef;
       }
 
-      const code = fallbackCode ?? await fs.readFile(normalized, "utf8")
-      const hasUseForwardedRef = analyzeVueSfc(code).hasUseForwardedRef
+      const code = fallbackCode ?? (await fs.readFile(normalized, "utf8"));
+      const hasUseForwardedRef = analyzeVueSfc(code).hasUseForwardedRef;
       analysisCache.set(normalized, {
         mtimeMs: stat.mtimeMs,
-        hasUseForwardedRef
-      })
+        hasUseForwardedRef,
+      });
 
-      return hasUseForwardedRef
+      return hasUseForwardedRef;
     } catch {
       if (fallbackCode == null) {
-        return false
+        return false;
       }
 
-      return analyzeVueSfc(fallbackCode).hasUseForwardedRef
+      return analyzeVueSfc(fallbackCode).hasUseForwardedRef;
     }
   }
 
@@ -61,65 +61,69 @@ export const unplugin = createUnplugin<ForwardRefOptions | undefined>((options =
     code: string,
     id: string,
     context: {
-      resolve?: (source: string, importer?: string, options?: { skipSelf?: boolean }) => Promise<{ id: string } | null>
-      addWatchFile?: (id: string) => void
-    }
+      resolve?: (
+        source: string,
+        importer?: string,
+        options?: { skipSelf?: boolean },
+      ) => Promise<{ id: string } | null>;
+      addWatchFile?: (id: string) => void;
+    },
   ): Promise<Set<string>> {
-    const componentImports = getVueComponentImports(code)
-    const result = new Set<string>()
+    const componentImports = getVueComponentImports(code);
+    const result = new Set<string>();
 
     await Promise.all(
       componentImports.map(async (componentImport) => {
-        const resolved = await resolveVueImport(componentImport, id, context)
+        const resolved = await resolveVueImport(componentImport, id, context);
 
         if (!resolved) {
-          return
+          return;
         }
 
-        context.addWatchFile?.(resolved)
-        rememberImporter(resolved, id)
+        context.addWatchFile?.(resolved);
+        rememberImporter(resolved, id);
 
         if (await analyzeFile(resolved)) {
-          result.add(componentImport.local)
-          result.add(kebabCase(componentImport.local))
+          result.add(componentImport.local);
+          result.add(kebabCase(componentImport.local));
         }
-      })
-    )
+      }),
+    );
 
-    return result
+    return result;
   }
 
   function rememberImporter(child: string, importer: string): void {
-    const normalizedChild = normalizePath(child)
-    const importers = importerByChild.get(normalizedChild) ?? new Set<string>()
-    importers.add(normalizePath(importer))
-    importerByChild.set(normalizedChild, importers)
+    const normalizedChild = normalizePath(child);
+    const importers = importerByChild.get(normalizedChild) ?? new Set<string>();
+    importers.add(normalizePath(importer));
+    importerByChild.set(normalizedChild, importers);
   }
 
   function invalidateImporters(filename: string): ModuleNode[] {
     if (!server) {
-      return []
+      return [];
     }
 
-    const normalized = normalizePath(filename)
-    const importers = importerByChild.get(normalized)
+    const normalized = normalizePath(filename);
+    const importers = importerByChild.get(normalized);
 
     if (!importers) {
-      return []
+      return [];
     }
 
-    const modules: ModuleNode[] = []
+    const modules: ModuleNode[] = [];
 
     for (const importer of importers) {
-      const module = server.moduleGraph.getModuleById(importer)
+      const module = server.moduleGraph.getModuleById(importer);
 
       if (module) {
-        server.moduleGraph.invalidateModule(module)
-        modules.push(module)
+        server.moduleGraph.invalidateModule(module);
+        modules.push(module);
       }
     }
 
-    return modules
+    return modules;
   }
 
   return {
@@ -127,140 +131,146 @@ export const unplugin = createUnplugin<ForwardRefOptions | undefined>((options =
     enforce: "pre",
     vite: {
       configResolved(config) {
-        const hasVuePlugin = config.plugins.some((plugin) => plugin.name === "vite:vue")
+        const hasVuePlugin = config.plugins.some((plugin) => plugin.name === "vite:vue");
 
         if (!hasVuePlugin) {
-          config.logger.warn("vue-refs should be used with @vitejs/plugin-vue.")
+          config.logger.warn("vue-refs should be used with @vitejs/plugin-vue.");
         }
       },
       configureServer(viteServer) {
-        server = viteServer
+        server = viteServer;
       },
       async handleHotUpdate(ctx) {
         if (!VUE_RE.test(ctx.file)) {
-          return
+          return;
         }
 
-        analysisCache.delete(normalizePath(ctx.file))
-        await analyzeFile(ctx.file, await ctx.read())
+        analysisCache.delete(normalizePath(ctx.file));
+        await analyzeFile(ctx.file, await ctx.read());
 
-        const importerModules = invalidateImporters(ctx.file)
-        return importerModules.length > 0 ? [...ctx.modules, ...importerModules] : undefined
-      }
+        const importerModules = invalidateImporters(ctx.file);
+        return importerModules.length > 0 ? [...ctx.modules, ...importerModules] : undefined;
+      },
     },
     async transform(code, id) {
-      const cleanId = stripQuery(id)
+      const cleanId = stripQuery(id);
 
       if (!VUE_RE.test(cleanId) || !filter(cleanId)) {
-        return null
+        return null;
       }
 
-      const forwardedRefComponents = await resolveForwardedRefComponents(code, cleanId, this)
+      const forwardedRefComponents = await resolveForwardedRefComponents(code, cleanId, this);
       const result = transformVueSfc(code, {
         filename: cleanId,
         forwardedRefComponents,
-        sourceMap: options.sourcemap ?? true
-      })
+        sourceMap: options.sourcemap ?? true,
+      });
 
       analysisCache.set(normalizePath(cleanId), {
         mtimeMs: await getMtime(cleanId),
-        hasUseForwardedRef: result.hasUseForwardedRef
-      })
+        hasUseForwardedRef: result.hasUseForwardedRef,
+      });
 
       if (!result.hasChanged) {
-        return null
+        return null;
       }
 
       return {
         code: result.code,
-        map: result.map ?? undefined
-      }
-    }
-  }
-})
+        map: result.map ?? undefined,
+      };
+    },
+  };
+});
 
 function createIdFilter(include: FilterPattern, exclude?: FilterPattern): (id: string) => boolean {
-  return (id) => matchesPattern(id, include) && !matchesPattern(id, exclude)
+  return (id) => matchesPattern(id, include) && !matchesPattern(id, exclude);
 }
 
 function matchesPattern(id: string, pattern?: FilterPattern): boolean {
   if (pattern == null) {
-    return false
+    return false;
   }
 
-  const patterns = Array.isArray(pattern) ? pattern : [pattern]
+  const patterns = Array.isArray(pattern) ? pattern : [pattern];
 
   return patterns.some((item) => {
     if (typeof item === "string") {
-      return id.includes(item)
+      return id.includes(item);
     }
 
-    return item.test(id)
-  })
+    return item.test(id);
+  });
 }
 
 async function resolveVueImport(
   componentImport: ComponentImport,
   importer: string,
   context: {
-    resolve?: (source: string, importer?: string, options?: { skipSelf?: boolean }) => Promise<{ id: string } | null>
-  }
+    resolve?: (
+      source: string,
+      importer?: string,
+      options?: { skipSelf?: boolean },
+    ) => Promise<{ id: string } | null>;
+  },
 ): Promise<string | null> {
-  const resolved = await context.resolve?.(componentImport.source, importer, { skipSelf: true })
+  const resolved = await context.resolve?.(componentImport.source, importer, { skipSelf: true });
 
   if (resolved?.id) {
-    const clean = stripQuery(resolved.id)
-    return VUE_RE.test(clean) ? clean : await tryVueFile(clean)
+    const clean = stripQuery(resolved.id);
+    return VUE_RE.test(clean) ? clean : await tryVueFile(clean);
   }
 
   if (!componentImport.source.startsWith(".")) {
-    return null
+    return null;
   }
 
-  const absolute = path.resolve(path.dirname(importer), componentImport.source)
-  return await tryVueFile(absolute)
+  const absolute = path.resolve(path.dirname(importer), componentImport.source);
+  return await tryVueFile(absolute);
 }
 
 async function tryVueFile(filename: string): Promise<string | null> {
-  const candidates = VUE_RE.test(filename) ? [filename] : [`${filename}.vue`, path.join(filename, "index.vue")]
+  const candidates = VUE_RE.test(filename)
+    ? [filename]
+    : [`${filename}.vue`, path.join(filename, "index.vue")];
 
   for (const candidate of candidates) {
     try {
-      const stat = await fs.stat(candidate)
+      const stat = await fs.stat(candidate);
 
       if (stat.isFile()) {
-        return normalizePath(candidate)
+        return normalizePath(candidate);
       }
     } catch {
       // Continue trying candidates.
     }
   }
 
-  return null
+  return null;
 }
 
 async function getMtime(filename: string): Promise<number> {
   try {
-    return (await fs.stat(filename)).mtimeMs
+    return (await fs.stat(filename)).mtimeMs;
   } catch {
-    return Date.now()
+    return Date.now();
   }
 }
 
 function stripQuery(id: string): string {
-  return id.split("?", 1)[0]
+  return id.split("?", 1)[0];
 }
 
 function normalizePath(filename: string): string {
-  return filename.replace(/\\/g, "/")
+  return filename.replace(/\\/g, "/");
 }
 
 function kebabCase(value: string): string {
   return value
     .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
     .replace(/_/g, "-")
-    .toLowerCase()
+    .toLowerCase();
 }
 
-export const vite = unplugin.vite
-export default vite
+export const vite = unplugin.vite;
+export default vite;
