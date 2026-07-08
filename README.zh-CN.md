@@ -51,12 +51,12 @@ pnpm add vue-refx
 ```
 
 ```ts
-import vue from "@vitejs/plugin-vue"
-import VueRefs from "vue-refx/vite"
+import vue from "@vitejs/plugin-vue";
+import VueRefs from "vue-refx/vite";
 
 export default defineConfig({
   plugins: [vue(), VueRefs()],
-})
+});
 ```
 
 ---
@@ -67,13 +67,13 @@ export default defineConfig({
 
 ```vue
 <script setup lang="ts">
-import { useForwardedRef } from "vue-refx"
+import { useForwardedRef } from "vue-refx";
 
-const ref = useForwardedRef<HTMLInputElement>()
+const ref = useForwardedRef<HTMLInputElement>();
 </script>
 
 <template>
-  <input :ref="ref" />
+  <input ref="ref" />
 </template>
 ```
 
@@ -81,13 +81,13 @@ const ref = useForwardedRef<HTMLInputElement>()
 
 ```vue
 <script setup lang="ts">
-import { ref } from "vue"
-import MyInput from "./MyInput.vue"
+import { ref } from "vue";
+import MyInput from "./MyInput.vue";
 
-const input = ref<HTMLInputElement | null>(null)
+const input = ref<HTMLInputElement | null>(null);
 
 function focus() {
-  input.value?.focus()
+  input.value?.focus();
 }
 </script>
 
@@ -124,13 +124,13 @@ MyInput.vue
 
 ```vue
 <script setup lang="ts">
-import { useForwardedRef } from "vue-refx"
+import { useForwardedRef } from "vue-refx";
 
-const ref = useForwardedRef<HTMLInputElement>()
+const ref = useForwardedRef<HTMLInputElement>();
 </script>
 
 <template>
-  <BaseInput :ref="ref" />
+  <BaseInput ref="ref" />
 </template>
 ```
 
@@ -138,13 +138,13 @@ BaseInput.vue
 
 ```vue
 <script setup lang="ts">
-import { useForwardedRef } from "vue-refx"
+import { useForwardedRef } from "vue-refx";
 
-const ref = useForwardedRef<HTMLInputElement>()
+const ref = useForwardedRef<HTMLInputElement>();
 </script>
 
 <template>
-  <InputWrapper :ref="ref" />
+  <InputWrapper ref="ref" />
 </template>
 ```
 
@@ -152,13 +152,13 @@ InputWrapper.vue
 
 ```vue
 <script setup lang="ts">
-import { useForwardedRef } from "vue-refx"
+import { useForwardedRef } from "vue-refx";
 
-const ref = useForwardedRef<HTMLInputElement>()
+const ref = useForwardedRef<HTMLInputElement>();
 </script>
 
 <template>
-  <input :ref="ref" />
+  <input ref="ref" />
 </template>
 ```
 
@@ -176,22 +176,22 @@ const ref = useForwardedRef<HTMLInputElement>()
 
 ```vue
 <script setup lang="ts">
-import { useForwardedRef } from "vue-refx"
+import { useForwardedRef } from "vue-refx";
 
-const input = ref<HTMLInputElement>()
+const input = ref<HTMLInputElement>();
 
 function focus() {
-  input.value?.focus()
+  input.value?.focus();
 }
 
 function blur() {
-  input.value?.blur()
+  input.value?.blur();
 }
 
 useForwardedRef(() => ({
   focus,
   blur,
-}))
+}));
 </script>
 
 <template>
@@ -202,8 +202,8 @@ useForwardedRef(() => ({
 父组件现在会收到：
 
 ```ts
-input.value.focus()
-input.value.blur()
+input.value.focus();
+input.value.blur();
 ```
 
 这在概念上类似于 React 的 `useImperativeHandle()`。
@@ -223,23 +223,41 @@ vue-refx **只在编译期工作**。
 转换后：
 
 ```vue
-<MyInput ref="input" :__forwarded_ref__="input" />
+<MyInput :__forwarded_ref__="(value) => (input = value)" />
 ```
 
 在子组件内部：
 
 ```ts
-const ref = useForwardedRef()
+const ref = useForwardedRef();
 ```
 
 会被编译为类似下面的代码：
 
 ```ts
 const props = defineProps<{
-  __forwarded_ref__?: ForwardedRef<any>
-}>()
+  __forwarded_ref__?: ForwardedRef<any>;
+}>();
 
-const ref = props.__forwarded_ref__
+let value = null;
+
+const ref = customRef((track, trigger) => ({
+  get() {
+    track();
+    return value;
+  },
+  set(nextValue) {
+    value = nextValue;
+    trigger();
+    const target = props.__forwarded_ref__;
+
+    if (typeof target === "function") {
+      target(nextValue);
+    } else if (target) {
+      target.value = nextValue;
+    }
+  },
+}));
 ```
 
 当传入工厂函数时：
@@ -248,7 +266,7 @@ const ref = props.__forwarded_ref__
 useForwardedRef(() => ({
   focus,
   blur,
-}))
+}));
 ```
 
 编译器会自动生成等价的 `defineExpose()`。
@@ -261,13 +279,13 @@ useForwardedRef(() => ({
 
 ## 对比
 
-| 功能 | Vue `defineExpose()` | vue-refx |
-| --- | --- | --- |
-| 暴露组件方法 | ✅ | ✅ |
-| 穿过多个组件转发 ref | ❌ | ✅ |
-| 零运行时 | ✅ | ✅ |
-| 需要修改运行时 | ❌ | ❌ |
-| React 风格的 forwarded ref API | ❌ | ✅ |
+| 功能                           | Vue `defineExpose()` | vue-refx |
+| ------------------------------ | -------------------- | -------- |
+| 暴露组件方法                   | ✅                   | ✅       |
+| 穿过多个组件转发 ref           | ❌                   | ✅       |
+| 零运行时                       | ✅                   | ✅       |
+| 需要修改运行时                 | ❌                   | ❌       |
+| React 风格的 forwarded ref API | ❌                   | ✅       |
 
 ---
 
@@ -305,7 +323,7 @@ vue-refx 完全通过编译器转换实现。
 
 `useForwardedRef()` 会在编译阶段被完全擦除。
 
-生成后的代码等价于手写转换后的 Vue 代码。
+生成后的代码会使用 Vue 自带的 `customRef()`，让本地 `.value` ref 和父级转发 ref 保持同步。
 
 ---
 

@@ -43,7 +43,7 @@ export function transformTemplate(
     s.overwrite(
       options.offset + refBinding.start,
       options.offset + refBinding.end,
-      `:${FORWARDED_REF_PROP_NAME}="${escapeAttribute(buildForwardedRefExpression(refBinding.expression))}"`,
+      `:${FORWARDED_REF_PROP_NAME}="${escapeAttribute(buildForwardedRefExpression(refBinding.expression, refBinding.kind))}"`,
     );
   });
 }
@@ -78,6 +78,7 @@ function shouldInjectForwardedRef(
 
 interface RefBinding {
   expression: string;
+  kind: "static" | "dynamic";
   start: number;
   end: number;
 }
@@ -89,6 +90,7 @@ function getRefBinding(props: Array<AttributeNode | DirectiveNode>): RefBinding 
       return expression
         ? {
             expression,
+            kind: "static",
             start: prop.loc.start.offset,
             end: prop.loc.end.offset,
           }
@@ -107,6 +109,7 @@ function getRefBinding(props: Array<AttributeNode | DirectiveNode>): RefBinding 
       return expression
         ? {
             expression,
+            kind: "dynamic",
             start: prop.loc.start.offset,
             end: prop.loc.end.offset,
           }
@@ -136,9 +139,13 @@ function hasForwardedRefBinding(props: Array<AttributeNode | DirectiveNode>): bo
   return false;
 }
 
-function buildForwardedRefExpression(expression: string): string {
+function buildForwardedRefExpression(expression: string, kind: RefBinding["kind"]): string {
   if (isFunctionRefExpression(expression) || !isAssignableExpression(expression)) {
     return expression;
+  }
+
+  if (kind === "static") {
+    return `(value) => ${expression} = value`;
   }
 
   return `(value) => typeof ${expression} === "function" ? ${expression}(value) : (${expression} = value)`;

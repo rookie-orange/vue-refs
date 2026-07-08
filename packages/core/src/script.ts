@@ -22,7 +22,6 @@ export interface TransformScriptSetupOptions {
 }
 
 interface ForwardedRefBinding {
-  local: string;
   call: CallExpression;
   statementStart: number;
   typeSource: string | null;
@@ -37,6 +36,7 @@ interface DefinePropsCall {
 
 interface ScriptScope {
   bindings: Set<string>;
+  customRefIdentifier: string | null;
   forwardedRefLocals: Set<string>;
   forwardedRefTypeIdentifier: string | null;
   removableForwardedRefImports: ImportDeclaration[];
@@ -76,6 +76,8 @@ export function transformScriptSetup(
   const defineProps = collectDefineProps(ast)[0] ?? null;
   const defineExpose = collectDefineExpose(ast)[0] ?? null;
   const propsIdentifier = defineProps?.propsIdentifier ?? choosePropsIdentifier(scope.bindings);
+  const customRefIdentifier =
+    scope.customRefIdentifier ?? chooseCustomRefIdentifier(scope.bindings);
   const forwardedRefTypeIdentifier =
     scope.forwardedRefTypeIdentifier ?? chooseForwardedRefTypeIdentifier(scope.bindings);
   const refType = buildRefType(bindings, forwardedRefTypeIdentifier);
@@ -88,6 +90,13 @@ export function transformScriptSetup(
     s.prependLeft(
       options.offset,
       `\nimport type { ForwardedRef${forwardedRefTypeIdentifier === "ForwardedRef" ? "" : ` as ${forwardedRefTypeIdentifier}`} } from "vue-refx"\n`,
+    );
+  }
+
+  if (!scope.customRefIdentifier) {
+    s.prependLeft(
+      options.offset,
+      `\nimport { customRef${customRefIdentifier === "customRef" ? "" : ` as ${customRefIdentifier}`} } from "vue"\n`,
     );
   }
 
@@ -116,7 +125,12 @@ export function transformScriptSetup(
     s.overwrite(
       options.offset + assertPosition(binding.call.start),
       options.offset + assertPosition(binding.call.end),
-      `${propsIdentifier}.${FORWARDED_REF_PROP_NAME}`,
+      buildForwardedRefSource(
+        binding.typeSource,
+        propsIdentifier,
+        customRefIdentifier,
+        forwardedRefTypeIdentifier,
+      ),
     );
   }
 
@@ -150,7 +164,6 @@ function collectForwardedRefBindings(
       const statementStart = declaration?.node.start ?? node.start;
 
       bindings.push({
-        local: node.id.name,
         call: node.init,
         statementStart: assertPosition(statementStart),
         typeSource: getUseForwardedRefTypeSource(code, node.init),
@@ -213,6 +226,7 @@ function collectDefineExpose(ast: File): DefineExposeCall[] {
 
 function collectScriptScope(ast: File): ScriptScope {
   const bindings = new Set<string>();
+  let customRefIdentifier: string | null = null;
   const forwardedRefLocals = new Set<string>();
   let forwardedRefTypeIdentifier: string | null = null;
   const removableForwardedRefImports: ImportDeclaration[] = [];
@@ -230,6 +244,21 @@ function collectScriptScope(ast: File): ScriptScope {
     },
     ImportDeclaration(path) {
       const node = path.node;
+
+      if (node.source.value === "vue") {
+        for (const specifier of node.specifiers) {
+          if (
+            node.importKind !== "type" &&
+            specifier.type === "ImportSpecifier" &&
+            specifier.imported.type === "Identifier" &&
+            specifier.imported.name === "customRef" &&
+            specifier.local.type === "Identifier" &&
+            specifier.importKind !== "type"
+          ) {
+            customRefIdentifier = specifier.local.name;
+          }
+        }
+      }
 
       if (isForwardedRefImportSource(node.source.value)) {
         for (const specifier of node.specifiers) {
@@ -281,6 +310,7 @@ function collectScriptScope(ast: File): ScriptScope {
 
   return {
     bindings,
+    customRefIdentifier,
     forwardedRefLocals,
     forwardedRefTypeIdentifier,
     removableForwardedRefImports,
@@ -477,6 +507,52 @@ function buildRefType(bindings: ForwardedRefBinding[], forwardedRefTypeIdentifie
   }
 
   return typeSources.map((type) => `${forwardedRefTypeIdentifier}<${type}>`).join(" | ");
+}
+
+function buildForwardedRefSource(
+  typeSource: string | null,
+  propsIdentifier: string,
+  customRefIdentifier: string,
+  forwardedRefTypeIdentifier: string,
+): string {
+  const forwardedRefType = `${forwardedRefTypeIdentifier}<${typeSource ?? "any"}>`;
+  return `${customRefIdentifier}<${typeSource ?? "any"} | null>((track, trigger) => {
+  let value = null as ${typeSource ?? "any"} | null
+
+  return {
+    get() {
+      track()
+      return value
+    },
+    set(nextValue) {
+      value = nextValue
+      trigger()
+      const target = ${propsIdentifier}.${FORWARDED_REF_PROP_NAME}
+
+      if (typeof target === "function") {
+        target(nextValue)
+      } else if (target) {
+        target.value = nextValue
+      }
+    }
+  }
+}) as ${forwardedRefType}`;
+}
+
+function chooseCustomRefIdentifier(bindings: Set<string>): string {
+  if (!bindings.has("customRef")) {
+    return "customRef";
+  }
+
+  let index = 1;
+  let candidate = "__customRef";
+
+  while (bindings.has(candidate)) {
+    candidate = `__customRef${index}`;
+    index += 1;
+  }
+
+  return candidate;
 }
 
 function chooseForwardedRefTypeIdentifier(bindings: Set<string>): string {

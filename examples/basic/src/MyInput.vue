@@ -5,5 +5,5 @@ const ref = useForwardedRef<HTMLInputElement>();
 </script>
 
 <template>
-  <input :ref="ref" />
+  <input ref="ref" />
 </template>

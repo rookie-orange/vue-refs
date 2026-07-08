@@ -1,9 +1,3 @@
 {
-  "words": [
-    "esbuild",
-    "oxfmt",
-    "oxlint",
-    "refx",
-    "vitejs"
-  ]
+  "words": ["esbuild", "oxfmt", "oxlint", "refx", "vitejs"]
 }

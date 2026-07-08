@@ -51,12 +51,12 @@ pnpm add vue-refx
 ```
 
 ```ts
-import vue from "@vitejs/plugin-vue"
-import VueRefs from "vue-refx/vite"
+import vue from "@vitejs/plugin-vue";
+import VueRefs from "vue-refx/vite";
 
 export default defineConfig({
   plugins: [vue(), VueRefs()],
-})
+});
 ```
 
 ---
@@ -67,13 +67,13 @@ export default defineConfig({
 
 ```vue
 <script setup lang="ts">
-import { useForwardedRef } from "vue-refx"
+import { useForwardedRef } from "vue-refx";
 
-const ref = useForwardedRef<HTMLInputElement>()
+const ref = useForwardedRef<HTMLInputElement>();
 </script>
 
 <template>
-  <input :ref="ref" />
+  <input ref="ref" />
 </template>
 ```
 
@@ -81,13 +81,13 @@ const ref = useForwardedRef<HTMLInputElement>()
 
 ```vue
 <script setup lang="ts">
-import { ref } from "vue"
-import MyInput from "./MyInput.vue"
+import { ref } from "vue";
+import MyInput from "./MyInput.vue";
 
-const input = ref<HTMLInputElement | null>(null)
+const input = ref<HTMLInputElement | null>(null);
 
 function focus() {
-  input.value?.focus()
+  input.value?.focus();
 }
 </script>
 
@@ -124,13 +124,13 @@ MyInput.vue
 
 ```vue
 <script setup lang="ts">
-import { useForwardedRef } from "vue-refx"
+import { useForwardedRef } from "vue-refx";
 
-const ref = useForwardedRef<HTMLInputElement>()
+const ref = useForwardedRef<HTMLInputElement>();
 </script>
 
 <template>
-  <BaseInput :ref="ref" />
+  <BaseInput ref="ref" />
 </template>
 ```
 
@@ -138,13 +138,13 @@ BaseInput.vue
 
 ```vue
 <script setup lang="ts">
-import { useForwardedRef } from "vue-refx"
+import { useForwardedRef } from "vue-refx";
 
-const ref = useForwardedRef<HTMLInputElement>()
+const ref = useForwardedRef<HTMLInputElement>();
 </script>
 
 <template>
-  <InputWrapper :ref="ref" />
+  <InputWrapper ref="ref" />
 </template>
 ```
 
@@ -152,13 +152,13 @@ InputWrapper.vue
 
 ```vue
 <script setup lang="ts">
-import { useForwardedRef } from "vue-refx"
+import { useForwardedRef } from "vue-refx";
 
-const ref = useForwardedRef<HTMLInputElement>()
+const ref = useForwardedRef<HTMLInputElement>();
 </script>
 
 <template>
-  <input :ref="ref" />
+  <input ref="ref" />
 </template>
 ```
 
@@ -176,22 +176,22 @@ Instead, expose a custom API.
 
 ```vue
 <script setup lang="ts">
-import { useForwardedRef } from "vue-refx"
+import { useForwardedRef } from "vue-refx";
 
-const input = ref<HTMLInputElement>()
+const input = ref<HTMLInputElement>();
 
 function focus() {
-  input.value?.focus()
+  input.value?.focus();
 }
 
 function blur() {
-  input.value?.blur()
+  input.value?.blur();
 }
 
 useForwardedRef(() => ({
   focus,
   blur,
-}))
+}));
 </script>
 
 <template>
@@ -202,8 +202,8 @@ useForwardedRef(() => ({
 The parent now receives:
 
 ```ts
-input.value.focus()
-input.value.blur()
+input.value.focus();
+input.value.blur();
 ```
 
 This is conceptually similar to React's `useImperativeHandle()`.
@@ -223,23 +223,41 @@ Before compilation:
 After transformation:
 
 ```vue
-<MyInput ref="input" :__forwarded_ref__="input" />
+<MyInput :__forwarded_ref__="(value) => (input = value)" />
 ```
 
 Inside the child component:
 
 ```ts
-const ref = useForwardedRef()
+const ref = useForwardedRef();
 ```
 
 is compiled into something equivalent to:
 
 ```ts
 const props = defineProps<{
-  __forwarded_ref__?: ForwardedRef<any>
-}>()
+  __forwarded_ref__?: ForwardedRef<any>;
+}>();
 
-const ref = props.__forwarded_ref__
+let value = null;
+
+const ref = customRef((track, trigger) => ({
+  get() {
+    track();
+    return value;
+  },
+  set(nextValue) {
+    value = nextValue;
+    trigger();
+    const target = props.__forwarded_ref__;
+
+    if (typeof target === "function") {
+      target(nextValue);
+    } else if (target) {
+      target.value = nextValue;
+    }
+  },
+}));
 ```
 
 When a factory is provided:
@@ -248,7 +266,7 @@ When a factory is provided:
 useForwardedRef(() => ({
   focus,
   blur,
-}))
+}));
 ```
 
 the compiler generates the equivalent `defineExpose()` automatically.
@@ -305,7 +323,7 @@ No.
 
 `useForwardedRef()` is completely erased during compilation.
 
-The generated code is equivalent to writing the transformed Vue code manually.
+The generated code uses Vue's own `customRef()` to keep the local `.value` ref and the forwarded parent ref in sync.
 
 ---
 

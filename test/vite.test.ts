@@ -64,9 +64,7 @@ import Plain from "./Plain.vue"
     const transform = plugin.transform;
     const result = await callTransform(transform, parentCode, parent);
 
-    expect(result?.code).toContain(
-      `MyInput :__forwarded_ref__="(value) => typeof input === &quot;function&quot; ? input(value) : (input = value)"`,
-    );
+    expect(result?.code).toContain(`MyInput :__forwarded_ref__="(value) => input = value"`);
     expect(result?.code).not.toContain(`MyInput ref="input"`);
     expect(result?.code).toContain(`<Plain ref="plain" />`);
     expect(result?.code).toContain(`<div ref="el" />`);
