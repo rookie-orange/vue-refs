@@ -14,9 +14,9 @@ __forwarded_ref__
 
 ```vue
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
-const input = defineForwardRef<HTMLInputElement>("input");
+const input = defineForwardRef<HTMLInputElement>('input')
 </script>
 
 <template>
@@ -28,35 +28,35 @@ const input = defineForwardRef<HTMLInputElement>("input");
 
 ```vue
 <script setup lang="ts">
-import { customRef } from "vue";
-import type { Ref } from "vue";
+import { customRef } from 'vue'
+import type { Ref } from 'vue'
 
 const props = defineProps<{
-  __forwarded_ref__?: Ref<HTMLInputElement | null> | ((value: any) => void);
-}>();
+  __forwarded_ref__?: Ref<HTMLInputElement | null> | ((value: any) => void)
+}>()
 
 const input = customRef<HTMLInputElement | null>((track, trigger) => {
-  let value = null as HTMLInputElement | null;
+  let value = null as HTMLInputElement | null
 
   return {
     get() {
-      track();
-      return value;
+      track()
+      return value
     },
     set(nextValue) {
-      value = nextValue;
-      trigger();
+      value = nextValue
+      trigger()
 
-      const target = props.__forwarded_ref__;
+      const target = props.__forwarded_ref__
 
-      if (typeof target === "function") {
-        target(nextValue);
+      if (typeof target === 'function') {
+        target(nextValue)
       } else if (target) {
-        target.value = nextValue;
+        target.value = nextValue
       }
     },
-  };
-}) as Ref<HTMLInputElement | null>;
+  }
+}) as Ref<HTMLInputElement | null>
 </script>
 
 <template>
@@ -101,7 +101,7 @@ Vite 插件会读取父组件的导入声明，解析其中的 `.vue` 组件，�
 defineExpose({
   open,
   close,
-});
+})
 ```
 
 `defineForwardRef(name, factory)` 的工厂函数不会合并进 `defineExpose()`。它会在本地模板 ref

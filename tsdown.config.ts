@@ -1,49 +1,49 @@
-import { defineConfig, type UserConfig } from "tsdown";
+import { defineConfig, type UserConfig } from 'tsdown'
 
 const shared: UserConfig = {
   dts: true,
-  format: ["esm", "cjs"],
+  format: ['esm', 'cjs'],
   sourcemap: true,
-  target: "es2022",
+  target: 'es2022',
   fixedExtension: false,
   hash: false,
   deps: {
-    neverBundle: ["vite", "vue", "@vue/language-core"],
+    neverBundle: ['vite', 'vue', '@vue/language-core'],
     dts: {
-      neverBundle: ["vite", "vue", "@vue/language-core"],
+      neverBundle: ['vite', 'vue', '@vue/language-core'],
     },
   },
   outputOptions: {
-    exports: "auto",
+    exports: 'auto',
   },
   outExtensions({ format }) {
     return {
-      js: format === "cjs" ? ".cjs" : ".js",
-      dts: format === "cjs" ? ".d.cts" : ".d.ts",
-    };
+      js: format === 'cjs' ? '.cjs' : '.js',
+      dts: format === 'cjs' ? '.d.cts' : '.d.ts',
+    }
   },
-};
+}
 
 export default defineConfig([
   {
     ...shared,
     entry: {
-      vite: "packages/vite/src/index.ts",
-      runtime: "packages/runtime/src/index.ts",
+      vite: 'packages/vite/src/index.ts',
+      runtime: 'packages/runtime/src/index.ts',
     },
     clean: true,
     outputOptions: {
-      exports: "named",
+      exports: 'named',
     },
   },
   {
     ...shared,
     entry: {
-      volar: "packages/volar/src/index.ts",
+      volar: 'packages/volar/src/index.ts',
     },
     clean: false,
     outputOptions: {
-      exports: "auto",
+      exports: 'auto',
     },
   },
-]);
+])

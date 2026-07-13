@@ -1,65 +1,70 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { defineForwardRef } from "vue-refx";
+import { computed, ref } from 'vue'
+import { defineForwardRef } from 'vue-refx'
 
-const value = ref("Compile-time factory");
-const focused = ref(false);
-const lastAction = ref("mounted");
+const value = ref('Compile-time factory')
+const focused = ref(false)
+const lastAction = ref('mounted')
 
 interface AdvancedFieldHandle {
-  focus(): void;
-  blur(): void;
-  select(): void;
-  clear(): void;
-  fill(value: string): void;
-  getValue(): string;
+  focus(): void
+  blur(): void
+  select(): void
+  clear(): void
+  fill(value: string): void
+  getValue(): string
 }
 
 function focus() {
-  inputEl.value?.focus();
-  lastAction.value = "focus()";
+  inputEl.value?.focus()
+  lastAction.value = 'focus()'
 }
 
 function blur() {
-  inputEl.value?.blur();
-  lastAction.value = "blur()";
+  inputEl.value?.blur()
+  lastAction.value = 'blur()'
 }
 
 function select() {
-  inputEl.value?.select();
-  lastAction.value = "select()";
+  inputEl.value?.select()
+  lastAction.value = 'select()'
 }
 
 function clear() {
-  value.value = "";
-  focus();
-  lastAction.value = "clear()";
+  value.value = ''
+  focus()
+  lastAction.value = 'clear()'
 }
 
 function fill(nextValue: string) {
-  value.value = nextValue;
-  focus();
-  lastAction.value = "fill(value)";
+  value.value = nextValue
+  focus()
+  lastAction.value = 'fill(value)'
 }
 
 function getValue() {
-  return value.value;
+  return value.value
 }
 
-const inputEl = defineForwardRef<HTMLInputElement, AdvancedFieldHandle>("input", () => ({
-  focus,
-  blur,
-  select,
-  clear,
-  fill,
-  getValue,
-}));
+const inputEl = defineForwardRef<HTMLInputElement, AdvancedFieldHandle>(
+  'input',
+  () => ({
+    focus,
+    blur,
+    select,
+    clear,
+    fill,
+    getValue,
+  }),
+)
 
-const strength = computed(() => Math.min(100, Math.max(12, value.value.length * 7)));
+const strength = computed(() =>
+  Math.min(100, Math.max(12, value.value.length * 7)),
+)
 
 function setFocused(nextFocused: boolean) {
-  focused.value = nextFocused;
-  lastAction.value = nextFocused ? "focus event" : "blur event";
+  focused.value = nextFocused
+  lastAction.value = nextFocused ? 'focus event' : 'blur event'
 }
 </script>
 
@@ -67,7 +72,7 @@ function setFocused(nextFocused: boolean) {
   <section class="field-console" :data-focused="focused">
     <div class="console-header">
       <span class="status-dot" />
-      <span>{{ focused ? "Focused" : "Idle" }}</span>
+      <span>{{ focused ? 'Focused' : 'Idle' }}</span>
     </div>
 
     <label class="field-shell">
@@ -88,7 +93,7 @@ function setFocused(nextFocused: boolean) {
     <dl>
       <div>
         <dt>Value</dt>
-        <dd>{{ value || "empty" }}</dd>
+        <dd>{{ value || 'empty' }}</dd>
       </div>
       <div>
         <dt>Last</dt>
@@ -104,7 +109,9 @@ function setFocused(nextFocused: boolean) {
   gap: 14px;
   border: 1px solid var(--line-strong, #cbd5d1);
   border-radius: 8px;
-  background: linear-gradient(135deg, rgb(255 255 255 / 94%), rgb(245 248 246 / 92%)), #ffffff;
+  background:
+    linear-gradient(135deg, rgb(255 255 255 / 94%), rgb(245 248 246 / 92%)),
+    #ffffff;
   box-shadow: 0 18px 42px rgb(17 24 22 / 10%);
   padding: 16px;
 }
@@ -127,7 +134,7 @@ function setFocused(nextFocused: boolean) {
   box-shadow: 0 0 0 4px rgb(154 168 161 / 16%);
 }
 
-.field-console[data-focused="true"] .status-dot {
+.field-console[data-focused='true'] .status-dot {
   background: #13a66f;
   box-shadow: 0 0 0 4px rgb(19 166 111 / 18%);
 }

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import MyInput from "./MyInput.vue";
+import { ref } from 'vue'
+import MyInput from './MyInput.vue'
 
-const input = ref<HTMLInputElement | null>(null);
+const input = ref<HTMLInputElement | null>(null)
 </script>
 
 <template>

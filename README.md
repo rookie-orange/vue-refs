@@ -5,7 +5,7 @@
 Compiler-only forwarded refs for Vue, centered on one macro:
 
 ```ts
-defineForwardRef();
+defineForwardRef()
 ```
 
 - Zero runtime
@@ -65,12 +65,12 @@ pnpm add vue-refx
 ```
 
 ```ts
-import vue from "@vitejs/plugin-vue";
-import VueRefx from "vue-refx/vite";
+import vue from '@vitejs/plugin-vue'
+import VueRefx from 'vue-refx/vite'
 
 export default defineConfig({
   plugins: [vue(), VueRefx()],
-});
+})
 ```
 
 Enable the Volar plugin in `tsconfig.json` to get template ref name completion
@@ -90,9 +90,9 @@ Child component:
 
 ```vue
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
-defineForwardRef("input");
+defineForwardRef('input')
 </script>
 
 <template>
@@ -104,10 +104,10 @@ Parent component:
 
 ```vue
 <script setup lang="ts">
-import { ref } from "vue";
-import MyInput from "./MyInput.vue";
+import { ref } from 'vue'
+import MyInput from './MyInput.vue'
 
-const input = ref<HTMLInputElement | null>(null);
+const input = ref<HTMLInputElement | null>(null)
 </script>
 
 <template>
@@ -125,7 +125,7 @@ Use the same macro when you only need an imperative component API.
 
 ```vue
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
 function focus() {}
 function blur() {}
@@ -133,7 +133,7 @@ function blur() {}
 defineForwardRef(() => ({
   focus,
   blur,
-}));
+}))
 </script>
 ```
 
@@ -143,23 +143,26 @@ This compiles to a single `defineExpose()` call.
 
 ```vue
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
 interface InputHandle {
-  focus(): void;
-  input(value: string): void;
+  focus(): void
+  input(value: string): void
 }
 
-const input = defineForwardRef<HTMLInputElement, InputHandle>("input", (input) => ({
-  focus() {
-    input.value?.focus();
-  },
-  input(value) {
-    if (input.value) {
-      input.value.value = value;
-    }
-  },
-}));
+const input = defineForwardRef<HTMLInputElement, InputHandle>(
+  'input',
+  (input) => ({
+    focus() {
+      input.value?.focus()
+    },
+    input(value) {
+      if (input.value) {
+        input.value.value = value
+      }
+    },
+  }),
+)
 </script>
 
 <template>
@@ -180,9 +183,9 @@ MyInput.vue
 
 ```vue
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
-defineForwardRef("input");
+defineForwardRef('input')
 </script>
 
 <template>
@@ -194,9 +197,9 @@ BaseInput.vue
 
 ```vue
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
-defineForwardRef("input");
+defineForwardRef('input')
 </script>
 
 <template>
@@ -208,9 +211,9 @@ InputWrapper.vue
 
 ```vue
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
-defineForwardRef("input");
+defineForwardRef('input')
 </script>
 
 <template>
@@ -225,7 +228,7 @@ The parent still receives the final native input element.
 When assigned, the macro returns a typed Vue ref:
 
 ```ts
-const input = defineForwardRef<HTMLInputElement>("input");
+const input = defineForwardRef<HTMLInputElement>('input')
 // Ref<HTMLInputElement | null>
 ```
 
@@ -235,7 +238,7 @@ forwarded element internally.
 When the return value is ignored:
 
 ```ts
-defineForwardRef("input");
+defineForwardRef('input')
 ```
 
 no local variable is generated.
@@ -245,7 +248,7 @@ no local variable is generated.
 The compiler verifies every forwarded template ref name:
 
 ```ts
-defineForwardRef("input");
+defineForwardRef('input')
 ```
 
 must match:
@@ -282,9 +285,9 @@ Child component before transform:
 
 ```vue
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
-const input = defineForwardRef<HTMLInputElement>("input");
+const input = defineForwardRef<HTMLInputElement>('input')
 </script>
 
 <template>
@@ -296,35 +299,35 @@ Child component after transform is equivalent to:
 
 ```vue
 <script setup lang="ts">
-import { customRef } from "vue";
-import type { Ref } from "vue";
+import { customRef } from 'vue'
+import type { Ref } from 'vue'
 
 const props = defineProps<{
-  __forwarded_ref__?: Ref<HTMLInputElement | null> | ((value: any) => void);
-}>();
+  __forwarded_ref__?: Ref<HTMLInputElement | null> | ((value: any) => void)
+}>()
 
 const input = customRef<HTMLInputElement | null>((track, trigger) => {
-  let value = null as HTMLInputElement | null;
+  let value = null as HTMLInputElement | null
 
   return {
     get() {
-      track();
-      return value;
+      track()
+      return value
     },
     set(nextValue) {
-      value = nextValue;
-      trigger();
+      value = nextValue
+      trigger()
 
-      const target = props.__forwarded_ref__;
+      const target = props.__forwarded_ref__
 
-      if (typeof target === "function") {
-        target(nextValue);
+      if (typeof target === 'function') {
+        target(nextValue)
       } else if (target) {
-        target.value = nextValue;
+        target.value = nextValue
       }
     },
-  };
-}) as Ref<HTMLInputElement | null>;
+  }
+}) as Ref<HTMLInputElement | null>
 </script>
 
 <template>

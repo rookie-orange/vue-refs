@@ -5,13 +5,13 @@
 `defineForwardRef` 从 `vue-refx` 导入：
 
 ```ts
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 ```
 
 把宏调用赋值给变量时，它的返回值是 Vue 的 `Ref<T | null>`。
 
 ```ts
-const input = defineForwardRef<HTMLInputElement>("input");
+const input = defineForwardRef<HTMLInputElement>('input')
 // Ref<HTMLInputElement | null>
 ```
 
@@ -22,20 +22,23 @@ ref 收到的句柄类型。
 
 ```ts
 interface InputHandle {
-  focus(): void;
-  input(value: string): void;
+  focus(): void
+  input(value: string): void
 }
 
-const input = defineForwardRef<HTMLInputElement, InputHandle>("input", (input) => ({
-  focus() {
-    input.value?.focus();
-  },
-  input(value) {
-    if (input.value) {
-      input.value.value = value;
-    }
-  },
-}));
+const input = defineForwardRef<HTMLInputElement, InputHandle>(
+  'input',
+  (input) => ({
+    focus() {
+      input.value?.focus()
+    },
+    input(value) {
+      if (input.value) {
+        input.value.value = value
+      }
+    },
+  }),
+)
 ```
 
 ## 自动补全模板 ref 名称
@@ -53,9 +56,9 @@ Volar 插件会收集模板中的静态 `ref` 名称，然后给 `defineForwardR
 插件支持普通导入和别名导入：
 
 ```ts
-import { defineForwardRef as forward } from "vue-refx";
+import { defineForwardRef as forward } from 'vue-refx'
 
-forward("input");
+forward('input')
 ```
 
 ## 组件句柄类型
@@ -64,16 +67,16 @@ forward("input");
 
 ```vue
 <script setup lang="ts">
-import { ref } from "vue";
-import AdvancedField from "./AdvancedField.vue";
+import { ref } from 'vue'
+import AdvancedField from './AdvancedField.vue'
 
 interface AdvancedFieldHandle {
-  focus(): void;
-  clear(): void;
-  getValue(): string;
+  focus(): void
+  clear(): void
+  getValue(): string
 }
 
-const field = ref<AdvancedFieldHandle | null>(null);
+const field = ref<AdvancedFieldHandle | null>(null)
 </script>
 
 <template>

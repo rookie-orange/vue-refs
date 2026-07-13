@@ -5,7 +5,7 @@
 面向 Vue 的编译期 ref 转发库，围绕一个宏：
 
 ```ts
-defineForwardRef();
+defineForwardRef()
 ```
 
 - 零运行时
@@ -60,12 +60,12 @@ pnpm add vue-refx
 ```
 
 ```ts
-import vue from "@vitejs/plugin-vue";
-import VueRefx from "vue-refx/vite";
+import vue from '@vitejs/plugin-vue'
+import VueRefx from 'vue-refx/vite'
 
 export default defineConfig({
   plugins: [vue(), VueRefx()],
-});
+})
 ```
 
 在 `tsconfig.json` 中启用 Volar 插件后，`defineForwardRef("...")` 里的模板
@@ -85,9 +85,9 @@ ref 名称会获得补全提示：
 
 ```vue
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
-defineForwardRef("input");
+defineForwardRef('input')
 </script>
 
 <template>
@@ -99,10 +99,10 @@ defineForwardRef("input");
 
 ```vue
 <script setup lang="ts">
-import { ref } from "vue";
-import MyInput from "./MyInput.vue";
+import { ref } from 'vue'
+import MyInput from './MyInput.vue'
 
-const input = ref<HTMLInputElement | null>(null);
+const input = ref<HTMLInputElement | null>(null)
 </script>
 
 <template>
@@ -119,7 +119,7 @@ const input = ref<HTMLInputElement | null>(null);
 
 ```vue
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
 function focus() {}
 function blur() {}
@@ -127,7 +127,7 @@ function blur() {}
 defineForwardRef(() => ({
   focus,
   blur,
-}));
+}))
 </script>
 ```
 
@@ -137,23 +137,26 @@ defineForwardRef(() => ({
 
 ```vue
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
 interface InputHandle {
-  focus(): void;
-  input(value: string): void;
+  focus(): void
+  input(value: string): void
 }
 
-const input = defineForwardRef<HTMLInputElement, InputHandle>("input", (input) => ({
-  focus() {
-    input.value?.focus();
-  },
-  input(value) {
-    if (input.value) {
-      input.value.value = value;
-    }
-  },
-}));
+const input = defineForwardRef<HTMLInputElement, InputHandle>(
+  'input',
+  (input) => ({
+    focus() {
+      input.value?.focus()
+    },
+    input(value) {
+      if (input.value) {
+        input.value.value = value
+      }
+    },
+  }),
+)
 </script>
 
 <template>
@@ -172,9 +175,9 @@ MyInput.vue
 
 ```vue
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
-defineForwardRef("input");
+defineForwardRef('input')
 </script>
 
 <template>
@@ -186,9 +189,9 @@ BaseInput.vue
 
 ```vue
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
-defineForwardRef("input");
+defineForwardRef('input')
 </script>
 
 <template>
@@ -200,9 +203,9 @@ InputWrapper.vue
 
 ```vue
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
-defineForwardRef("input");
+defineForwardRef('input')
 </script>
 
 <template>
@@ -217,7 +220,7 @@ defineForwardRef("input");
 赋值使用时，宏返回一个带类型的 Vue ref：
 
 ```ts
-const input = defineForwardRef<HTMLInputElement>("input");
+const input = defineForwardRef<HTMLInputElement>('input')
 // Ref<HTMLInputElement | null>
 ```
 
@@ -226,7 +229,7 @@ const input = defineForwardRef<HTMLInputElement>("input");
 忽略返回值时：
 
 ```ts
-defineForwardRef("input");
+defineForwardRef('input')
 ```
 
 不会生成本地变量。
@@ -236,7 +239,7 @@ defineForwardRef("input");
 编译器会校验每一个转发的模板 ref 名称：
 
 ```ts
-defineForwardRef("input");
+defineForwardRef('input')
 ```
 
 必须匹配：
@@ -273,9 +276,9 @@ Cannot find template ref "input".
 
 ```vue
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
-const input = defineForwardRef<HTMLInputElement>("input");
+const input = defineForwardRef<HTMLInputElement>('input')
 </script>
 
 <template>
@@ -287,35 +290,35 @@ const input = defineForwardRef<HTMLInputElement>("input");
 
 ```vue
 <script setup lang="ts">
-import { customRef } from "vue";
-import type { Ref } from "vue";
+import { customRef } from 'vue'
+import type { Ref } from 'vue'
 
 const props = defineProps<{
-  __forwarded_ref__?: Ref<HTMLInputElement | null> | ((value: any) => void);
-}>();
+  __forwarded_ref__?: Ref<HTMLInputElement | null> | ((value: any) => void)
+}>()
 
 const input = customRef<HTMLInputElement | null>((track, trigger) => {
-  let value = null as HTMLInputElement | null;
+  let value = null as HTMLInputElement | null
 
   return {
     get() {
-      track();
-      return value;
+      track()
+      return value
     },
     set(nextValue) {
-      value = nextValue;
-      trigger();
+      value = nextValue
+      trigger()
 
-      const target = props.__forwarded_ref__;
+      const target = props.__forwarded_ref__
 
-      if (typeof target === "function") {
-        target(nextValue);
+      if (typeof target === 'function') {
+        target(nextValue)
       } else if (target) {
-        target.value = nextValue;
+        target.value = nextValue
       }
     },
-  };
-}) as Ref<HTMLInputElement | null>;
+  }
+}) as Ref<HTMLInputElement | null>
 </script>
 
 <template>

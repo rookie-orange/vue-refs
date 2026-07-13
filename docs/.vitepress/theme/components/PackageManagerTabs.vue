@@ -1,58 +1,74 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from 'vue'
 
-type PackageManager = "npm" | "pnpm" | "yarn" | "bun";
+type PackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun'
 
 const props = withDefaults(
   defineProps<{
-    packageName?: string;
-    defaultManager?: PackageManager;
+    packageName?: string
+    defaultManager?: PackageManager
   }>(),
   {
-    packageName: "vue-refx",
-    defaultManager: "npm",
+    packageName: 'vue-refx',
+    defaultManager: 'npm',
   },
-);
+)
 
-const storageKey = "vue-refx-package-manager";
+const storageKey = 'vue-refx-package-manager'
 const packageManagers = computed(() => [
-  { id: "npm" as const, label: "npm", command: `npm install ${props.packageName}` },
-  { id: "pnpm" as const, label: "pnpm", command: `pnpm add ${props.packageName}` },
-  { id: "yarn" as const, label: "yarn", command: `yarn add ${props.packageName}` },
-  { id: "bun" as const, label: "bun", command: `bun add ${props.packageName}` },
-]);
+  {
+    id: 'npm' as const,
+    label: 'npm',
+    command: `npm install ${props.packageName}`,
+  },
+  {
+    id: 'pnpm' as const,
+    label: 'pnpm',
+    command: `pnpm add ${props.packageName}`,
+  },
+  {
+    id: 'yarn' as const,
+    label: 'yarn',
+    command: `yarn add ${props.packageName}`,
+  },
+  { id: 'bun' as const, label: 'bun', command: `bun add ${props.packageName}` },
+])
 
-const activeManager = ref<PackageManager>(props.defaultManager);
+const activeManager = ref<PackageManager>(props.defaultManager)
 
 const activeCommand = computed(
   () =>
-    packageManagers.value.find((manager) => manager.id === activeManager.value)?.command ??
-    packageManagers.value[0].command,
-);
+    packageManagers.value.find((manager) => manager.id === activeManager.value)
+      ?.command ?? packageManagers.value[0].command,
+)
 
 function selectManager(manager: PackageManager) {
-  activeManager.value = manager;
+  activeManager.value = manager
 }
 
 function selectRelativeManager(offset: number) {
-  const currentIndex = packageManagers.value.findIndex((manager) => manager.id === activeManager.value);
-  const nextIndex = (currentIndex + offset + packageManagers.value.length) % packageManagers.value.length;
-  activeManager.value = packageManagers.value[nextIndex].id;
+  const currentIndex = packageManagers.value.findIndex(
+    (manager) => manager.id === activeManager.value,
+  )
+  const nextIndex =
+    (currentIndex + offset + packageManagers.value.length) %
+    packageManagers.value.length
+  activeManager.value = packageManagers.value[nextIndex].id
 }
 
 onMounted(() => {
-  const savedManager = localStorage.getItem(storageKey);
+  const savedManager = localStorage.getItem(storageKey)
 
   if (packageManagers.value.some((manager) => manager.id === savedManager)) {
-    activeManager.value = savedManager as PackageManager;
+    activeManager.value = savedManager as PackageManager
   }
-});
+})
 
 watch(activeManager, (manager) => {
-  if (typeof localStorage !== "undefined") {
-    localStorage.setItem(storageKey, manager);
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem(storageKey, manager)
   }
-});
+})
 </script>
 
 <template>
@@ -121,7 +137,7 @@ watch(activeManager, (manager) => {
   height: 2px;
   border-radius: 2px;
   background: transparent;
-  content: "";
+  content: '';
 }
 
 .tab:hover {

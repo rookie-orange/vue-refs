@@ -12,7 +12,7 @@ Cannot find template ref "input".
 
 ```vue
 <script setup lang="ts">
-defineForwardRef("input");
+defineForwardRef('input')
 </script>
 
 <template>
@@ -28,7 +28,7 @@ defineForwardRef("input");
 
 ```vue
 <script setup lang="ts">
-import MyInput from "./MyInput.vue";
+import MyInput from './MyInput.vue'
 </script>
 
 <template>
@@ -45,12 +45,12 @@ Vite 插件会分析父组件导入的 `.vue` 文件，只有当被导入组件�
 `vue-refx` 应与 `@vitejs/plugin-vue` 一起使用：
 
 ```ts
-import vue from "@vitejs/plugin-vue";
-import VueRefx from "vue-refx/vite";
+import vue from '@vitejs/plugin-vue'
+import VueRefx from 'vue-refx/vite'
 
 export default defineConfig({
   plugins: [vue(), VueRefx()],
-});
+})
 ```
 
 ## IDE 没有补全

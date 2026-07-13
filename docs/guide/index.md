@@ -3,7 +3,7 @@
 `vue-refx` 是一个面向 Vue 3 的编译期 ref 转发库。它的核心 API 只有一个宏：
 
 ```ts
-defineForwardRef();
+defineForwardRef()
 ```
 
 Vue 已经提供了 `defineExpose()`，适合让子组件向父组件暴露方法。但当一个原生元素被设计系统组件、headless 组件或业务包装组件层层包住时，父组件常常真正想拿到的是最里层的元素。

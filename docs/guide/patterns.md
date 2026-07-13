@@ -6,9 +6,9 @@
 
 ```vue
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
-defineForwardRef("input");
+defineForwardRef('input')
 </script>
 
 <template>
@@ -22,12 +22,12 @@ defineForwardRef("input");
 
 ```vue
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
-const input = defineForwardRef<HTMLInputElement>("input");
+const input = defineForwardRef<HTMLInputElement>('input')
 
 function focus() {
-  input.value?.focus();
+  input.value?.focus()
 }
 </script>
 
@@ -42,7 +42,7 @@ function focus() {
 
 ```vue
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
 function focus() {}
 function blur() {}
@@ -50,7 +50,7 @@ function blur() {}
 defineForwardRef(() => ({
   focus,
   blur,
-}));
+}))
 </script>
 ```
 
@@ -62,29 +62,32 @@ defineForwardRef(() => ({
 
 ```vue
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
 interface BaseInputHandle {
-  focus(): void;
-  blur(): void;
+  focus(): void
+  blur(): void
 }
 
 interface InputHandle extends BaseInputHandle {
-  input(value: string): void;
+  input(value: string): void
 }
 
-const input = defineForwardRef<BaseInputHandle, InputHandle>("input", (input) => ({
-  focus() {
-    input.value?.focus();
-  },
-  blur() {
-    input.value?.blur();
-  },
-  input(value) {
-    input.value?.focus();
-    // 在这里更新本地状态，或继续委托给下游组件
-  },
-}));
+const input = defineForwardRef<BaseInputHandle, InputHandle>(
+  'input',
+  (input) => ({
+    focus() {
+      input.value?.focus()
+    },
+    blur() {
+      input.value?.blur()
+    },
+    input(value) {
+      input.value?.focus()
+      // 在这里更新本地状态，或继续委托给下游组件
+    },
+  }),
+)
 </script>
 
 <template>
@@ -102,9 +105,9 @@ const input = defineForwardRef<BaseInputHandle, InputHandle>("input", (input) =>
 ```vue
 <!-- MyInput.vue -->
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
-defineForwardRef("input");
+defineForwardRef('input')
 </script>
 
 <template>
@@ -115,9 +118,9 @@ defineForwardRef("input");
 ```vue
 <!-- BaseInput.vue -->
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
-defineForwardRef("input");
+defineForwardRef('input')
 </script>
 
 <template>
@@ -128,9 +131,9 @@ defineForwardRef("input");
 ```vue
 <!-- InputWrapper.vue -->
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
-defineForwardRef("input");
+defineForwardRef('input')
 </script>
 
 <template>
@@ -146,10 +149,10 @@ defineForwardRef("input");
 
 ```vue
 <script setup lang="ts">
-import MyInput from "./MyInput.vue";
+import MyInput from './MyInput.vue'
 
 function setInput(value: HTMLInputElement | null) {
-  console.log(value);
+  console.log(value)
 }
 </script>
 

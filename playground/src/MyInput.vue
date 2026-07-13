@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
-defineForwardRef("input");
+defineForwardRef('input')
 </script>
 
 <template>

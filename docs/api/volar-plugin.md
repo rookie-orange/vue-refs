@@ -9,8 +9,8 @@ Volar 插件从 `vue-refx/volar` 加载，用于增强编辑器里的模板 ref 
 ```jsonc
 {
   "vueCompilerOptions": {
-    "plugins": ["vue-refx/volar"]
-  }
+    "plugins": ["vue-refx/volar"],
+  },
 }
 ```
 
@@ -26,9 +26,9 @@ Volar 插件从 `vue-refx/volar` 加载，用于增强编辑器里的模板 ref 
 ## 支持别名导入
 
 ```ts
-import { defineForwardRef as forward } from "vue-refx";
+import { defineForwardRef as forward } from 'vue-refx'
 
-forward("input");
+forward('input')
 ```
 
 ## 限制

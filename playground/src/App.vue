@@ -1,68 +1,68 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import AdvancedField from "./AdvancedField.vue";
-import MyInput from "./MyInput.vue";
+import { onMounted, ref } from 'vue'
+import AdvancedField from './AdvancedField.vue'
+import MyInput from './MyInput.vue'
 
 interface AdvancedFieldHandle {
-  focus(): void;
-  blur(): void;
-  select(): void;
-  clear(): void;
-  fill(value: string): void;
-  getValue(): string;
+  focus(): void
+  blur(): void
+  select(): void
+  clear(): void
+  fill(value: string): void
+  getValue(): string
 }
 
-const basicInput = ref<HTMLInputElement | null>(null);
-const advancedApi = ref<AdvancedFieldHandle | null>(null);
-const lastParentAction = ref("waiting for mount");
-const sampleIndex = ref(0);
+const basicInput = ref<HTMLInputElement | null>(null)
+const advancedApi = ref<AdvancedFieldHandle | null>(null)
+const lastParentAction = ref('waiting for mount')
+const sampleIndex = ref(0)
 
 const samples = [
-  "Forwarded handle is live",
-  "Factory handle extended",
-  "Vue runtime stays untouched",
-];
+  'Forwarded handle is live',
+  'Factory handle extended',
+  'Vue runtime stays untouched',
+]
 
 function focusBasicInput() {
-  basicInput.value?.focus();
-  lastParentAction.value = "basic DOM focus";
+  basicInput.value?.focus()
+  lastParentAction.value = 'basic DOM focus'
 }
 
 function focusAdvanced() {
-  advancedApi.value?.focus();
-  lastParentAction.value = "factory focus";
+  advancedApi.value?.focus()
+  lastParentAction.value = 'factory focus'
 }
 
 function selectAdvanced() {
-  advancedApi.value?.select();
-  lastParentAction.value = "factory select";
+  advancedApi.value?.select()
+  lastParentAction.value = 'factory select'
 }
 
 function fillAdvanced() {
-  const nextValue = samples[sampleIndex.value % samples.length];
+  const nextValue = samples[sampleIndex.value % samples.length]
 
-  sampleIndex.value += 1;
-  advancedApi.value?.fill(nextValue);
-  lastParentAction.value = `fill: ${nextValue}`;
+  sampleIndex.value += 1
+  advancedApi.value?.fill(nextValue)
+  lastParentAction.value = `fill: ${nextValue}`
 }
 
 function clearAdvanced() {
-  advancedApi.value?.clear();
-  lastParentAction.value = "factory clear";
+  advancedApi.value?.clear()
+  lastParentAction.value = 'factory clear'
 }
 
 function blurAdvanced() {
-  advancedApi.value?.blur();
-  lastParentAction.value = "factory blur";
+  advancedApi.value?.blur()
+  lastParentAction.value = 'factory blur'
 }
 
 function readAdvancedValue() {
-  lastParentAction.value = `read: ${advancedApi.value?.getValue() || "empty"}`;
+  lastParentAction.value = `read: ${advancedApi.value?.getValue() || 'empty'}`
 }
 
 onMounted(() => {
-  focusBasicInput();
-});
+  focusBasicInput()
+})
 </script>
 
 <template>
@@ -88,7 +88,9 @@ onMounted(() => {
             <MyInput ref="basicInput" />
           </label>
 
-          <button type="button" @click="focusBasicInput">Focus DOM input</button>
+          <button type="button" @click="focusBasicInput">
+            Focus DOM input
+          </button>
         </section>
 
         <section class="panel advanced-panel">
@@ -111,11 +113,11 @@ onMounted(() => {
           <dl class="inspector">
             <div>
               <dt>Forwarded handle</dt>
-              <dd>{{ advancedApi ? "ready" : "pending" }}</dd>
+              <dd>{{ advancedApi ? 'ready' : 'pending' }}</dd>
             </div>
             <div>
               <dt>Value API</dt>
-              <dd>{{ advancedApi?.getValue() || "empty" }}</dd>
+              <dd>{{ advancedApi?.getValue() || 'empty' }}</dd>
             </div>
           </dl>
         </section>
@@ -140,10 +142,11 @@ onMounted(() => {
   place-items: center;
   background:
     linear-gradient(90deg, rgb(23 33 29 / 5%) 1px, transparent 1px),
-    linear-gradient(180deg, rgb(23 33 29 / 5%) 1px, transparent 1px), var(--paper);
+    linear-gradient(180deg, rgb(23 33 29 / 5%) 1px, transparent 1px),
+    var(--paper);
   background-size: 34px 34px;
   color: var(--ink);
-  font-family: "Avenir Next", "Segoe UI", ui-sans-serif, sans-serif;
+  font-family: 'Avenir Next', 'Segoe UI', ui-sans-serif, sans-serif;
   padding: 32px;
 }
 

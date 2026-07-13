@@ -1,9 +1,9 @@
-import type { Ref } from "vue";
+import type { Ref } from 'vue'
 
-export function defineForwardRef<T = any>(_name: string): Ref<T | null>;
-export function defineForwardRef<T extends object>(_factory: () => T): void;
+export function defineForwardRef<T = any>(_name: string): Ref<T | null>
+export function defineForwardRef<T extends object>(_factory: () => T): void
 export function defineForwardRef<T = any, TExpose extends object = object>(
   _name: string,
   _factory: (ref: Ref<T | null>) => TExpose,
-): Ref<T | null>;
+): Ref<T | null>
 export function defineForwardRef(..._args: unknown[]): any {}

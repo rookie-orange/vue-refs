@@ -3,20 +3,20 @@
 `defineForwardRef()` 是 `vue-refx` 的核心宏。它只应该在经过 Vite 插件处理的 Vue SFC 中使用。
 
 ```ts
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 ```
 
 ## 类型签名
 
 ```ts
-import type { Ref } from "vue";
+import type { Ref } from 'vue'
 
-export function defineForwardRef<T = any>(name: string): Ref<T | null>;
-export function defineForwardRef<T extends object>(factory: () => T): void;
+export function defineForwardRef<T = any>(name: string): Ref<T | null>
+export function defineForwardRef<T extends object>(factory: () => T): void
 export function defineForwardRef<T = any, TExpose extends object = object>(
   name: string,
   factory: (ref: Ref<T | null>) => TExpose,
-): Ref<T | null>;
+): Ref<T | null>
 ```
 
 ## `defineForwardRef(name)`
@@ -25,9 +25,9 @@ export function defineForwardRef<T = any, TExpose extends object = object>(
 
 ```vue
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
-defineForwardRef("input");
+defineForwardRef('input')
 </script>
 
 <template>
@@ -42,7 +42,7 @@ defineForwardRef("input");
 需要在组件内部访问同一个元素时，接收返回值。
 
 ```ts
-const input = defineForwardRef<HTMLInputElement>("input");
+const input = defineForwardRef<HTMLInputElement>('input')
 ```
 
 返回值类型是 `Ref<HTMLInputElement | null>`。
@@ -55,7 +55,7 @@ const input = defineForwardRef<HTMLInputElement>("input");
 defineForwardRef(() => ({
   focus,
   blur,
-}));
+}))
 ```
 
 工厂函数返回的对象会合并进 `defineExpose()`。如果组件里已经存在 `defineExpose({ ... })`，属性会被追加进去。
@@ -66,20 +66,23 @@ defineForwardRef(() => ({
 
 ```ts
 interface InputHandle {
-  focus(): void;
-  input(value: string): void;
+  focus(): void
+  input(value: string): void
 }
 
-const input = defineForwardRef<HTMLInputElement, InputHandle>("input", (input) => ({
-  focus() {
-    input.value?.focus();
-  },
-  input(value) {
-    if (input.value) {
-      input.value.value = value;
-    }
-  },
-}));
+const input = defineForwardRef<HTMLInputElement, InputHandle>(
+  'input',
+  (input) => ({
+    focus() {
+      input.value?.focus()
+    },
+    input(value) {
+      if (input.value) {
+        input.value.value = value
+      }
+    },
+  }),
+)
 ```
 
 模板 ref 会先写入组件本地的 `Ref<T | null>`。当内部 ref 挂载时，父组件的 ref 会收到

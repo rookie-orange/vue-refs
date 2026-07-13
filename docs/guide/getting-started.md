@@ -9,13 +9,13 @@
 在 Vite 配置中加入 `vue-refx/vite` 插件：
 
 ```ts
-import vue from "@vitejs/plugin-vue";
-import { defineConfig } from "vite";
-import VueRefx from "vue-refx/vite";
+import vue from '@vitejs/plugin-vue'
+import { defineConfig } from 'vite'
+import VueRefx from 'vue-refx/vite'
 
 export default defineConfig({
   plugins: [vue(), VueRefx()],
-});
+})
 ```
 
 `vue-refx` 会检查项目里是否启用了 `@vitejs/plugin-vue`。它只处理 `.vue` 文件，并在 Vue SFC 编译之前运行。
@@ -27,8 +27,8 @@ export default defineConfig({
 ```jsonc
 {
   "vueCompilerOptions": {
-    "plugins": ["vue-refx/volar"]
-  }
+    "plugins": ["vue-refx/volar"],
+  },
 }
 ```
 
@@ -38,9 +38,9 @@ export default defineConfig({
 
 ```vue
 <script setup lang="ts">
-import { defineForwardRef } from "vue-refx";
+import { defineForwardRef } from 'vue-refx'
 
-defineForwardRef("input");
+defineForwardRef('input')
 </script>
 
 <template>
@@ -52,10 +52,10 @@ defineForwardRef("input");
 
 ```vue
 <script setup lang="ts">
-import { ref } from "vue";
-import MyInput from "./MyInput.vue";
+import { ref } from 'vue'
+import MyInput from './MyInput.vue'
 
-const input = ref<HTMLInputElement | null>(null);
+const input = ref<HTMLInputElement | null>(null)
 </script>
 
 <template>

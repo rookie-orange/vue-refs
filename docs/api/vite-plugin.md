@@ -3,19 +3,19 @@
 Vite 插件从 `vue-refx/vite` 导入：
 
 ```ts
-import VueRefx from "vue-refx/vite";
+import VueRefx from 'vue-refx/vite'
 ```
 
 ## 基础配置
 
 ```ts
-import vue from "@vitejs/plugin-vue";
-import { defineConfig } from "vite";
-import VueRefx from "vue-refx/vite";
+import vue from '@vitejs/plugin-vue'
+import { defineConfig } from 'vite'
+import VueRefx from 'vue-refx/vite'
 
 export default defineConfig({
   plugins: [vue(), VueRefx()],
-});
+})
 ```
 
 插件只处理 `.vue` 文件，并会在 Vue SFC 编译之前运行。
@@ -24,9 +24,9 @@ export default defineConfig({
 
 ```ts
 interface ForwardRefOptions {
-  include?: RegExp | string | Array<RegExp | string>;
-  exclude?: RegExp | string | Array<RegExp | string>;
-  sourcemap?: boolean;
+  include?: RegExp | string | Array<RegExp | string>
+  exclude?: RegExp | string | Array<RegExp | string>
+  sourcemap?: boolean
 }
 ```
 
@@ -37,7 +37,7 @@ interface ForwardRefOptions {
 ```ts
 VueRefx({
   include: /\.vue$/,
-});
+})
 ```
 
 字符串匹配使用 `id.includes(value)`。
@@ -49,7 +49,7 @@ VueRefx({
 ```ts
 VueRefx({
   exclude: /legacy/,
-});
+})
 ```
 
 ### sourcemap
@@ -59,7 +59,7 @@ VueRefx({
 ```ts
 VueRefx({
   sourcemap: true,
-});
+})
 ```
 
 ## 父组件转换
